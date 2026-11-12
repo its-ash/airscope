@@ -1,0 +1,11 @@
+{
+  "id": "airscope",
+  "name": "Airscope",
+  "repo": "its-ash/airscope",
+  "package": "com.itsash.airscope",
+  "tagline": "Wi-Fi analyzer: nearby networks, channel graphs, live signal and a dead-zone walk test.",
+  "description": "Airscope shows every Wi-Fi network around you with band, channel, signal strength, security and Wi-Fi standard. See how crowded each channel is, get a best-channel recommendation for your router, watch your connection live, and walk through your home to find weak spots. Everything runs on your phone, with no ads and no tracking.",
+  "category": "Tools",
+  "icon": "assets/icon/logo-1024.png",
+  "homepage": "https://airscope.itsash.in/"
+}

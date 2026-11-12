@@ -1,0 +1,226 @@
+<!doctype html>
+<!-- Airscope landing page (custom). Download links point at the latest GitHub release asset airscope.apk. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Airscope: Wi-Fi analyzer with channel graphs and a dead-zone walk test</title>
+<meta name="description" content="Wi-Fi analyzer: nearby networks, channel graphs, live signal and a dead-zone walk test.">
+<meta name="theme-color" content="#0E7490">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Airscope: Wi-Fi analyzer with channel graphs and a dead-zone walk test">
+<meta property="og:description" content="Wi-Fi analyzer: nearby networks, channel graphs, live signal and a dead-zone walk test.">
+<meta property="og:image" content="https://airscope.itsash.in/assets/icon/logo-1024.png">
+<meta property="og:url" content="https://airscope.itsash.in/">
+<link rel="icon" href="assets/icon/logo-1024.png">
+<style>
+  :root {
+    --bg:#F5FCFD; --bg2:#E4F5F8; --card:#FFFFFF; --line:#BFE3EA;
+    --text:#0A2A32; --muted:#3C5B63; --accent:#0E7490; --ink:#FFFFFF; --link:#0E7490; --tint:rgba(14,116,144,.1);
+    --shadow:0 24px 60px rgba(14,116,144,.25);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#06222A; --bg2:#082D37; --card:#0B3541; --line:#16525F;
+      --text:#E3F7FA; --muted:#98BEC6; --accent:#22D3EE; --ink:#04252E; --link:#67E8F9; --tint:rgba(34,211,238,.13);
+      --shadow:0 24px 60px rgba(34,211,238,.18);
+    }
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
+  a { color:var(--link); }
+  a:focus-visible, .btn:focus-visible { outline:3px solid var(--accent); outline-offset:3px; border-radius:6px; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 24px; }
+  .skip { position:absolute; left:-999px; top:8px; background:var(--accent); color:var(--ink); padding:8px 14px; border-radius:8px; z-index:20; }
+  .skip:focus { left:8px; }
+
+  nav { position:sticky; top:0; z-index:10; background:var(--bg); border-bottom:1px solid var(--line); }
+  nav .wrap { display:flex; align-items:center; justify-content:space-between; height:60px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; color:var(--text); text-decoration:none; }
+  .brand img { width:30px; height:30px; border-radius:7px; image-rendering:pixelated; }
+  .links { display:flex; gap:20px; font-size:14px; }
+  .links a { color:var(--muted); text-decoration:none; }
+  .links a:hover { color:var(--text); text-decoration:underline; }
+
+  .hero { display:grid; grid-template-columns:1.2fr .8fr; gap:48px; align-items:center; padding:72px 0 64px; }
+  .eyebrow { display:inline-block; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--link); background:var(--tint); border-radius:999px; padding:4px 12px; }
+  h1 { font-size:clamp(2.3rem,5.4vw,3.8rem); line-height:1.06; margin:18px 0 16px; letter-spacing:-.02em; }
+  h1 em { font-style:normal; color:var(--link); }
+  .lead { color:var(--muted); font-size:18px; max-width:34em; margin:0; }
+  .ctas { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+  .btn { display:inline-flex; align-items:center; gap:10px; min-height:52px; padding:0 26px; border-radius:10px; font-weight:600; border:1px solid var(--line); color:var(--text); text-decoration:none; background:var(--card); }
+  .btn:hover { border-color:var(--accent); }
+  .btn.primary { background:var(--accent); color:var(--ink); border-color:var(--accent); }
+  .btn.primary:hover { filter:brightness(1.08); }
+  .btn svg { width:20px; height:20px; }
+  .meta { margin-top:14px; color:var(--muted); font-size:13px; }
+  .art { display:grid; place-items:center; }
+  .art img { width:min(320px,80%); height:auto; border-radius:22%; box-shadow:var(--shadow); image-rendering:pixelated; }
+
+  section { padding:0 0 88px; }
+  h2 { font-size:clamp(1.6rem,3.2vw,2.2rem); margin:0 0 10px; letter-spacing:-.01em; }
+  h3 { margin:0 0 6px; font-size:17px; }
+  .sub { color:var(--muted); max-width:40em; margin:0 0 32px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .grid.four { grid-template-columns:repeat(2,1fr); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; }
+  .card p { margin:0; color:var(--muted); font-size:14.5px; }
+
+  ol.steps { margin:0; padding:0; list-style:none; counter-reset:s; display:grid; gap:12px; }
+  ol.steps li { counter-increment:s; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 20px 16px 66px; position:relative; color:var(--muted); }
+  ol.steps li::before { content:counter(s); position:absolute; left:20px; top:14px; width:30px; height:30px; border-radius:8px; background:var(--accent); color:var(--ink); display:grid; place-items:center; font-weight:700; }
+  li b, p b { color:var(--text); font-weight:600; }
+
+  .band { background:var(--bg2); border-block:1px solid var(--line); padding:72px 0; margin-bottom:88px; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  table { width:100%; border-collapse:collapse; font-size:14.5px; }
+  th, td { text-align:left; padding:10px 12px 10px 0; border-top:1px solid var(--line); vertical-align:top; }
+  tr:first-child th, tr:first-child td { border-top:0; }
+  th { color:var(--text); font-weight:600; width:38%; }
+  td { color:var(--muted); }
+  ul.plain { margin:0; padding-left:20px; color:var(--muted); }
+  ul.plain li { margin:6px 0; }
+
+  .final { text-align:center; background:var(--bg2); border:1px solid var(--line); border-radius:24px; padding:52px 24px; }
+  .final .ctas { justify-content:center; }
+  footer { border-top:1px solid var(--line); color:var(--muted); font-size:13px; padding:28px 0 48px; }
+  footer .wrap { display:flex; flex-wrap:wrap; gap:10px 24px; justify-content:space-between; }
+  footer a { color:var(--muted); }
+
+  @media (max-width:860px) {
+    .hero { grid-template-columns:1fr; padding-top:40px; gap:28px; }
+    .art { order:-1; }
+    .art img { width:150px; }
+    .grid, .grid.four, .two { grid-template-columns:1fr; }
+    .links a.hide-sm { display:none; }
+    th { width:44%; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="dl" viewBox="0 0 24 24"><path fill="currentColor" d="M5 20h14v-2H5v2zm14-9h-4V3H9v8H5l7 7 7-7z"/></symbol>
+</defs></svg>
+
+<nav aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="assets/icon/logo-1024.png" alt="" width="30" height="30">Airscope</a>
+    <div class="links">
+      <a class="hide-sm" href="#features">Features</a>
+      <a class="hide-sm" href="#how">How it works</a>
+      <a class="hide-sm" href="#privacy">Privacy</a>
+      <a href="https://github.com/its-ash/airscope">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <span class="eyebrow">Free · No ads · No tracking</span>
+      <h1>Find the best <em>Wi-Fi channel</em> and the dead zones.</h1>
+      <p class="lead">Airscope shows every Wi-Fi network around you with band, channel, signal, security and Wi-Fi standard. See how crowded each channel is, watch your connection live, and walk through your home to find weak spots.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/its-ash/airscope/releases/latest/download/airscope.apk"><svg aria-hidden="true"><use href="#dl"/></svg>Download APK</a>
+        <a class="btn" href="https://store.itsash.in">Get it in Ash Store</a>
+      </div>
+      <div class="meta">Android 8.0 or newer · Everything runs on your phone</div>
+    </div>
+    <div class="art"><img src="assets/icon/logo-1024.png" alt="Airscope app icon: pixel-art motif in pale cyan on a teal square" width="320" height="320"></div>
+  </header>
+
+  <section id="features" aria-labelledby="features-h">
+    <h2 id="features-h">Four tabs, one clear picture</h2>
+    <p class="sub">Networks, channels, your connection, and a walk test.</p>
+    <div class="grid four">
+      <div class="card"><h3>Networks</h3><p>Every access point in range with its name (hidden ones marked), BSSID, band (2.4, 5, 6 GHz), channel and width, signal strength with a quality bar, security (Open, WEP, WPA, WPA2, WPA3) and Wi-Fi generation (Wi-Fi 4, 5, 6, 6E, 7). Filter by band, sort by signal, name or channel.</p></div>
+      <div class="card"><h3>Channels</h3><p>A graph per band where each network is a curve over the channels it occupies, a best-channel recommendation for 2.4 GHz (1, 6, 11) and 5 GHz, and plain steps to change it on your router.</p></div>
+      <div class="card"><h3>Connection</h3><p>The live signal of the network you are on, updated every second, with link speed, frequency, channel, IP, gateway and a signal history graph.</p></div>
+      <div class="card"><h3>Walk test</h3><p>Name a room, hold still for 8 seconds, and get a Good, OK or Weak verdict. Compare spots to find dead zones.</p></div>
+    </div>
+  </section>
+
+  <section id="how" aria-labelledby="how-h">
+    <h2 id="how-h">How to use it</h2>
+    <p class="sub">From a messy 2.4 GHz band to a clear plan.</p>
+    <ol class="steps">
+      <li><b>Allow access.</b> Allow Location (and Nearby devices on Android 13+), and make sure Location and Wi-Fi are switched on. Android requires this to give any app scan results.</li>
+      <li><b>Open Networks</b> to see what is around you, then <b>Channels</b> to see which channel is least crowded and the suggested one for your router.</li>
+      <li><b>Change the channel</b> in your router settings, following the plain steps in the app, then check the Connection tab for the live signal.</li>
+      <li><b>Walk through your home</b> with the Walk test, one named spot at a time, and compare the verdicts to find weak areas.</li>
+    </ol>
+  </section>
+</div>
+
+<div class="band" id="limits">
+  <div class="wrap">
+    <h2>Honest about the limits</h2>
+    <p class="sub">Android decides how often an app may scan.</p>
+    <div class="grid">
+      <div class="card"><h3>4 scans per 2 minutes</h3><p>Android limits Wi-Fi scans to 4 per 2 minutes. Airscope shows when the last scan ran and uses cached results in between.</p></div>
+      <div class="card"><h3>Location must be on</h3><p>Without the Location permission and Location switched on, Android gives no scan results. Airscope shows an access screen until everything is ready.</p></div>
+      <div class="card"><h3>A recommendation, not a promise</h3><p>The best channel is computed from what your phone can hear right now. Your router and neighbors may still differ.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="privacy" aria-labelledby="privacy-h">
+    <h2 id="privacy-h">Permissions and privacy</h2>
+    <p class="sub">No ads, no tracking. Nothing leaves your phone, except the update check in Settings.</p>
+    <div class="card">
+      <table>
+        <tbody>
+          <tr><th scope="row">Location</th><td>Required by Android to give any app Wi-Fi scan results and the network name. Airscope does not read, store or send your location.</td></tr>
+          <tr><th scope="row">Nearby Wi-Fi devices</th><td>On Android 13+, to read nearby Wi-Fi networks, declared as not used for location.</td></tr>
+          <tr><th scope="row">Wi-Fi state and change Wi-Fi state</th><td>To read scan results and to start a scan.</td></tr>
+          <tr><th scope="row">Network state</th><td>To show details of the connection you are on, such as IP and gateway.</td></tr>
+          <tr><th scope="row">Internet</th><td>Only for the update check in Settings.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="install" aria-labelledby="install-h">
+    <h2 id="install-h">Requirements and install</h2>
+    <div class="two">
+      <div class="card"><h3>Requirements</h3>
+        <ul class="plain">
+          <li>Android 8.0 (API 26) or newer</li>
+          <li>Location permission allowed and Location switched on</li>
+          <li>Wi-Fi switched on</li>
+        </ul></div>
+      <div class="card"><h3>Install</h3>
+        <ul class="plain">
+          <li>Tap <b>Download APK</b> on your Android phone and open the file.</li>
+          <li>If Android asks, allow your browser to <b>install unknown apps</b>.</li>
+          <li>Or install <a href="https://store.itsash.in">Ash Store</a> once and get updates from it.</li>
+        </ul></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="final-h">
+    <div class="final">
+      <h2 id="final-h">See your Wi-Fi clearly.</h2>
+      <p class="sub" style="margin:0 auto 8px">Free, with no ads and no tracking.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/its-ash/airscope/releases/latest/download/airscope.apk"><svg aria-hidden="true"><use href="#dl"/></svg>Download APK</a>
+        <a class="btn" href="https://github.com/its-ash/airscope">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><a href="https://github.com/its-ash/airscope">GitHub</a> · <a href="https://store.itsash.in">Ash Store</a></span>
+    <span>Developed by <a href="https://itsash.github.io">Ashvini Jangid</a>. Android is a trademark of Google LLC.</span>
+  </div>
+</footer>
+</body>
+</html>
