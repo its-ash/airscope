@@ -2,6 +2,7 @@ package com.itsash.airscope
 
 import android.content.Intent
 import android.location.LocationManager
+import android.os.Build
 import android.provider.Settings
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
@@ -19,6 +20,9 @@ import io.flutter.plugin.common.MethodChannel
  * - `com.itsash.airscope/connection` (events): the connected network, about once a second.
  */
 class MainActivity : FlutterActivity() {
+    private var scanHandler: ScanStreamHandler? = null
+    private var connectionHandler: ConnectionStreamHandler? = null
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val messenger = flutterEngine.dartExecutor.binaryMessenger
@@ -50,15 +54,31 @@ class MainActivity : FlutterActivity() {
             }
         }
 
-        EventChannel(messenger, "$CHANNEL/scan")
-            .setStreamHandler(ScanStreamHandler(applicationContext, wifi))
-        EventChannel(messenger, "$CHANNEL/connection")
-            .setStreamHandler(ConnectionStreamHandler(wifi))
+        scanHandler?.onCancel(null)
+        connectionHandler?.onCancel(null)
+        val scan = ScanStreamHandler(applicationContext, wifi).also { scanHandler = it }
+        val connection = ConnectionStreamHandler(wifi).also { connectionHandler = it }
+        EventChannel(messenger, "$CHANNEL/scan").setStreamHandler(scan)
+        EventChannel(messenger, "$CHANNEL/connection").setStreamHandler(connection)
+    }
+
+    override fun onDestroy() {
+        scanHandler?.onCancel(null)
+        connectionHandler?.onCancel(null)
+        scanHandler = null
+        connectionHandler = null
+        super.onDestroy()
     }
 
     private fun isLocationEnabled(): Boolean {
         val lm = getSystemService(LOCATION_SERVICE) as LocationManager
-        return lm.isLocationEnabled
+        return if (Build.VERSION.SDK_INT >= 28) {
+            lm.isLocationEnabled
+        } else {
+            @Suppress("DEPRECATION")
+            lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        }
     }
 
     private companion object {

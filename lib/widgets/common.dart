@@ -68,8 +68,7 @@ class _ScanBarState extends State<ScanBar> {
   Widget build(BuildContext context) {
     final c = widget.controller;
     final secs = c.secondsSinceScan;
-    final wait = c.throttleWait;
-    final stillWaiting = wait != null && c.throttle.waitTime(DateTime.now()) != null;
+    final wait = c.throttleWait != null ? c.throttle.waitTime(DateTime.now()) : null;
     final label = c.scanning
         ? 'Scanning...'
         : secs == null
@@ -96,12 +95,12 @@ class _ScanBarState extends State<ScanBar> {
               ),
           ],
         ),
-        if (stillWaiting)
+        if (wait != null)
           Padding(
             padding: const EdgeInsets.only(bottom: UiSpace.sm),
             child: UiAlert(
               'Android allows 4 Wi-Fi scans every 2 minutes. The next scan can start in '
-              '${c.throttle.waitTime(DateTime.now())!.inSeconds + 1} s. The list below is from the last scan.',
+              '${wait.inSeconds + 1} s. The list below is from the last scan.',
               status: UiStatus.info,
             ),
           )

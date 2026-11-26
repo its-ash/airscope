@@ -98,6 +98,7 @@ class WifiController extends ChangeNotifier {
   Future<void> requestAccess() async => _apply(await source.requestAccess());
 
   void _apply(Access next) {
+    if (_disposed) return;
     final wasReady = access == Access.ready;
     access = next;
     if (next == Access.ready && !wasReady) {
@@ -109,10 +110,13 @@ class WifiController extends ChangeNotifier {
   }
 
   Future<void> _enterReady() async {
+    _scanSub?.cancel();
     _scanSub = source.scans.listen(_onScan, onError: (_) {});
     if (_foreground) _listenConnection();
     final cached = await source.scanResults();
+    if (_disposed || access != Access.ready) return;
     _onScan(cached, fromCache: true);
+    _autoTimer?.cancel();
     _autoTimer = Timer.periodic(autoScanEvery, (_) {
       // Keep one scan of the budget for the refresh button.
       if (_foreground && throttle.remaining(_clock()) > 1) unawaited(scan());
@@ -142,7 +146,7 @@ class WifiController extends ChangeNotifier {
     _foreground = value;
     if (value) {
       unawaited(refreshAccess().then((_) {
-        if (access == Access.ready) _listenConnection();
+        if (!_disposed && _foreground && access == Access.ready) _listenConnection();
       }));
     } else {
       _connSub?.cancel();
@@ -194,6 +198,7 @@ class WifiController extends ChangeNotifier {
     scanning = true;
     _notify();
     final ok = await source.startScan();
+    if (_disposed || access != Access.ready) return;
     if (!ok) {
       scanning = false;
       systemRefused = true;
@@ -202,7 +207,7 @@ class WifiController extends ChangeNotifier {
     }
     _scanTimeoutTimer?.cancel();
     _scanTimeoutTimer = Timer(scanTimeout, () {
-      if (scanning) {
+      if (!_disposed && scanning) {
         scanning = false;
         systemRefused = true;
         _notify();

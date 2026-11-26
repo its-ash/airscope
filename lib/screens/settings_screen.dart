@@ -45,6 +45,7 @@ class SettingsScreen extends StatelessWidget {
                 'Everything stays on this phone',
                 subtitle: 'Scan results and walk-test spots are never sent anywhere. '
                     'Airscope uses the internet only to check for app updates.',
+                maxSubtitleLines: 4,
                 icon: Icons.lock_rounded,
                 iconStatus: UiStatus.success,
               ),

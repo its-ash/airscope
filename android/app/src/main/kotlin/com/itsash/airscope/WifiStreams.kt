@@ -91,6 +91,7 @@ class ScanStreamHandler(private val context: Context, private val wifi: WifiRead
     private var receiver: BroadcastReceiver? = null
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+        onCancel(null)
         val r = object : BroadcastReceiver() {
             override fun onReceive(c: Context, intent: Intent) {
                 events.success(
@@ -111,7 +112,7 @@ class ScanStreamHandler(private val context: Context, private val wifi: WifiRead
     }
 
     override fun onCancel(arguments: Any?) {
-        receiver?.let { context.unregisterReceiver(it) }
+        receiver?.let { runCatching { context.unregisterReceiver(it) } }
         receiver = null
     }
 }
@@ -122,6 +123,7 @@ class ConnectionStreamHandler(private val wifi: WifiReader) : EventChannel.Strea
     private var tick: Runnable? = null
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+        onCancel(null)
         val r = object : Runnable {
             override fun run() {
                 events.success(wifi.connection())
